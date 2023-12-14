@@ -55,6 +55,56 @@ module.exports = {
         res.status(500).send('SERVER ERROR');
       });
   },
+  getStylesNew: (req, res) => {
+    models.products.getStylesPhotosAndSkus(req.params.id)
+      .then((stylesData) => {
+        const results = { product_id: req.params.id, results: [] };
+        const styleIds = [];
+        const photoIds = [];
+        const skuIds = [];
+        for (var i = 0; i < stylesData.rows.length; i++) {
+          if (styleIds.findLastIndex((id) => id === stylesData.rows[i].style_id) === -1) {
+            const skus = {};
+            skus[stylesData.rows[i].sku_id] = {
+              quantity: stylesData.rows[i].quantity, size: stylesData.rows[i].size,
+            };
+            results.results.push({
+              style_id: stylesData.rows[i].style_id,
+              name: stylesData.rows[i].name,
+              original_price: stylesData.rows[i].original_price,
+              sale_price: stylesData.rows[i].sale_price,
+              'default?': stylesData.rows[i]['default?'],
+              photos: [{
+                thumbnail_url: stylesData.rows[i].thumbnail_url,
+                url: stylesData.rows[i].url,
+              }],
+              skus,
+            });
+            styleIds.push(stylesData.rows[i].style_id);
+            photoIds.push(stylesData.rows[i].photo_id);
+            skuIds.push(stylesData.rows[i].sku_id);
+          } else {
+            if (photoIds.findLastIndex((id) => id === stylesData.rows[i].photo_id) === -1) {
+              results.results[results.results.length - 1].photos.push({
+                thumbnail_url: stylesData.rows[i].thumbnail_url,
+                url: stylesData.rows[i].url,
+              });
+              photoIds.push(stylesData.rows[i].photo_id);
+            }
+            if (skuIds.findLastIndex((id) => id === stylesData.rows[i].sku_id) === -1) {
+              results.results[results.results.length - 1].skus[stylesData.rows[i].sku_id] = {
+                quantity: stylesData.rows[i].quantity, size: stylesData.rows[i].size,
+              };
+              skuIds.push(stylesData.rows[i].sku_id);
+            }
+          }
+        }
+        res.status(200).send(results);
+      })
+      .catch(() => {
+        res.status(500).send('SERVER ERROR');
+      });
+  },
   getRelated: (req, res) => {
     models.products.getRelated(req.params.id)
       .then((relatedData) => {
