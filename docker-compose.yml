@@ -25,6 +25,7 @@ services:
       - .env
     volumes:
       - ./oldcsvs:/usr/src/Products/oldcsvs
+      - ./newcsvs:/usr/src/Products/newcsvs
     ports:
       - "3210:3210"
     depends_on:
