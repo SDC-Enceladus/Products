@@ -1,7 +1,7 @@
 const cleanCsv = require('./csvCleaner');
 
-const oldFile = '/Products/oldcsvs/styles.csv';
-const newFile = '/Products/newcsvs/styles.csv';
+const oldFile = 'home/ubuntu/Products/oldcsvs/styles.csv';
+const newFile = 'home/ubuntu/Products/newcsvs/styles.csv';
 const requiredColumns = ['id', 'productId', 'name'];
 const columnsToTrim = ['name'];
 
